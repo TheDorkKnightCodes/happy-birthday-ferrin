@@ -1,8 +1,8 @@
 // RunnerScene.js
-const DEBUG_HITBOXES = true;
+const DEBUG_HITBOXES = false;
 
-const TARGET_WIDTH = 40;
-const TARGET_HEIGHT = 108;
+const TARGET_WIDTH = 92;
+const TARGET_HEIGHT = 240;
 const IMG_WIDTH = 184;
 const IMG_HEIGHT = 480;
 const CROUCH_FACTOR = 0.55;
@@ -10,7 +10,7 @@ const CROUCH_FACTOR = 0.55;
 const OBSTACLE_TYPES = [
     {
         emoji: "⏰",
-        hitbox: { width: 38, height: 38 },
+        hitbox: { width: 76, height: 76 },
         yOffset: 0,
         messages: [
             "You slept through the alarm.",
@@ -20,7 +20,7 @@ const OBSTACLE_TYPES = [
     },
     {
         emoji: "🧾",
-        hitbox: { width: 32, height: 40 },
+        hitbox: { width: 64, height: 80 },
         yOffset: 0,
         messages: [
             "Bills and paperwork buried you alive.",
@@ -29,7 +29,7 @@ const OBSTACLE_TYPES = [
     },
     {
         emoji: "⏳",
-        hitbox: { width: 28, height: 36 },
+        hitbox: { width: 56, height: 72 },
         yOffset: 0,
         messages: [
             "Your deadlines caught up.",
@@ -39,11 +39,11 @@ const OBSTACLE_TYPES = [
     },
     {
         emoji: "📉",
-        hitbox: { width: 44, height: 44 },
+        hitbox: { width: 88, height: 88 },
         yOffset: - (TARGET_HEIGHT * CROUCH_FACTOR * 1.2),
         requiresDuck: true,
         messages: [
-            "You didn’t duck in time.",
+            "Inflation caught up with you.",
             "Limbo skills: insufficient.",
             "The market is down and so are you."
         ]
@@ -106,7 +106,7 @@ export default class RunnerScene extends Phaser.Scene {
 
         /* ───────── Player Visual ───────── */
         this.player = this.add.image(0, 0, "player")
-            .setOrigin(0.5, 0.65);
+            .setOrigin(0.5, 0.55);
 
         this.player.baseScaleX = TARGET_WIDTH / IMG_WIDTH;
         this.player.baseScaleY = TARGET_HEIGHT / IMG_HEIGHT;
@@ -120,7 +120,7 @@ export default class RunnerScene extends Phaser.Scene {
 
         /* ───────── UI ───────── */
         this.ageText = this.add.text(20, 20, "Age: 18", {
-            fontSize: "18px",
+            fontSize: `${48 / this.getUIScale()}px`,
             color: "#ffffff"
         });
 
@@ -187,7 +187,7 @@ export default class RunnerScene extends Phaser.Scene {
         if (this.isGameOver) return;
 
         if (this.playerBody.body.blocked.down) {
-            this.playerBody.setVelocityY(-500);
+            this.playerBody.setVelocityY(-600);
         }
     }
 
@@ -201,7 +201,7 @@ export default class RunnerScene extends Phaser.Scene {
             this.player.baseScaleX,
             this.player.baseScaleY * CROUCH_FACTOR
         );
-        this.player.setOrigin(0.5, 0.8);
+        this.player.setOrigin(0.5, 0.6);
         this.playerBody.body.setSize(
             TARGET_WIDTH,
             TARGET_HEIGHT * CROUCH_FACTOR
@@ -217,15 +217,15 @@ export default class RunnerScene extends Phaser.Scene {
             this.player.baseScaleX,
             this.player.baseScaleY
         );
-        this.player.setOrigin(0.5, 0.65);
+        this.player.setOrigin(0.5, 0.55);
+        // if player close to ground, snap body up to prevent sinking
+        if (this.playerBody.body.blocked.down || this.playerBody.y + TARGET_HEIGHT / 2 >= this.ground.y) {
+            this.playerBody.y -= TARGET_HEIGHT / 2;
+        }
         this.playerBody.body.setSize(
             TARGET_WIDTH,
             TARGET_HEIGHT
         );
-        if (this.playerBody.body.y + TARGET_HEIGHT > this.cameras.main.height - this.groundHeight) {
-            this.player.y -= TARGET_HEIGHT * (1 - CROUCH_FACTOR);
-            this.playerBody.y -= TARGET_HEIGHT * (1 - CROUCH_FACTOR);
-        }
     }
 
     /* ───────── Obstacles ───────── */
@@ -242,7 +242,7 @@ export default class RunnerScene extends Phaser.Scene {
             width + 50,
             y + (type.yOffset || 0),
             type.emoji,
-            { fontSize: "48px" }
+            { fontSize: "96px" }
         )
             .setOrigin(0.5, 1)
             .setDepth(10);
@@ -336,24 +336,25 @@ export default class RunnerScene extends Phaser.Scene {
 
     showGameOverDialog(reason) {
         const { centerX, centerY } = this.cameras.main;
+        const uiScale = this.getUIScale();
 
         this.add.rectangle(centerX, centerY, 360, 180, 0x000000, 0.85)
             .setDepth(100);
 
-        this.add.text(centerX, centerY - 30, reason, {
-            fontSize: "18px",
+        this.add.text(centerX, centerY - 120 * uiScale, reason, {
+            fontSize: `${40 / uiScale}px`,
             color: "#ffffff",
             align: "center",
-            wordWrap: { width: 320 }
+            wordWrap: { width: 720 * uiScale }
         }).setOrigin(0.5).setDepth(101);
 
-        this.add.text(centerX, centerY + 10, `You survived until age ${this.age}.`, {
-            fontSize: "16px",
+        this.add.text(centerX, centerY, `You survived until age ${this.age}.`, {
+            fontSize: `${40 / uiScale}px`,
             color: "#ffffff"
         }).setOrigin(0.5).setDepth(101);
 
-        this.add.text(centerX, centerY + 45, "Tap or press SPACE to retry", {
-            fontSize: "14px",
+        this.add.text(centerX, centerY + 100 * uiScale, "Jump key to retry", {
+            fontSize: `${36 / uiScale}px`,
             color: "#aaaaaa"
         }).setOrigin(0.5).setDepth(101);
 
@@ -365,5 +366,13 @@ export default class RunnerScene extends Phaser.Scene {
     shutdown() {
         document.removeEventListener("pointerdown", this.domPointerDown);
         document.removeEventListener("pointerup", this.domPointerUp);
+    }
+
+    getUIScale() {
+        const cam = this.cameras.main;
+        return Math.min(
+            cam.width / 1600,
+            cam.height / 900
+        );
     }
 }

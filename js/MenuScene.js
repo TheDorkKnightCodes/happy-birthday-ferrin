@@ -1,31 +1,40 @@
 export default class MenuScene extends Phaser.Scene {
-  constructor() {
-    super("MenuScene");
-  }
+    constructor() {
+        super("MenuScene");
+    }
 
-  create() {
-    console.log("MenuScene loaded");
-    const { width, height } = this.scale;
+    getUIScale() {
+        const cam = this.cameras.main;
+        return Math.min(
+            cam.width / 800,
+            cam.height / 450
+        );
+    }
 
-    this.add.text(width / 2, 100, "🎂 BIRTHDAY ARCADE 🎂", {
-      fontSize: "36px",
-      color: "#ffffff"
-    }).setOrigin(0.5);
+    create() {
+        console.log("MenuScene loaded");
+        console.log(`UIScale: ${this.getUIScale()}`);
+        const { width, height } = this.scale;
 
-    const startBtn = this.add.text(width / 2, 220,
-      "▶ Run From Responsibilities",
-      { fontSize: "24px", color: "#00ffcc" }
-    ).setOrigin(0.5).setInteractive();
+        this.add.text(width / 2, 100, "🎂 BIRTHDAY ARCADE 🎂", {
+            fontSize: `${72 / this.getUIScale()}px`,
+            color: "#ffffff"
+        }).setOrigin(0.5);
 
-    startBtn.on("pointerover", () => startBtn.setScale(1.1));
-    startBtn.on("pointerout", () => startBtn.setScale(1));
-    startBtn.on("pointerdown", () => {
-      this.scene.start("RunnerScene");
-    });
+        const startBtn = this.add.text(width / 2, 220,
+            "▶ Run From Responsibilities",
+            { fontSize: `${48 / this.getUIScale()}px`, color: "#00ffcc" }
+        ).setOrigin(0.5).setInteractive();
 
-    this.add.text(width / 2, 300,
-      "🔒 (Coming Soon)\n🔒 (Coming Soon)",
-      { fontSize: "16px", color: "#777", align: "center" }
-    ).setOrigin(0.5);
-  }
+        startBtn.on("pointerover", () => startBtn.setScale(1.1));
+        startBtn.on("pointerout", () => startBtn.setScale(1));
+        startBtn.on("pointerdown", () => {
+            this.scene.start("RunnerScene");
+        });
+
+        this.add.text(width / 2, 300,
+            "🔒 (Coming Soon)\n🔒 (Coming Soon)",
+            { fontSize: `${48 / this.getUIScale()}px`, color: "#777", align: "center" }
+        ).setOrigin(0.5);
+    }
 }

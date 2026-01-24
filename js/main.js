@@ -1,12 +1,21 @@
 import MenuScene from "./MenuScene.js";
 import RunnerScene from "./RunnerScene.js";
 
+const BASE_WIDTH = 1600;
+const BASE_HEIGHT = 900;
+
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
     parent: "game-container",
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#000000",
+
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: BASE_WIDTH,
+        height: BASE_HEIGHT
+    },
+
     physics: {
         default: "arcade",
         arcade: {
@@ -14,8 +23,8 @@ const config = {
             debug: false
         }
     },
+
     scene: [MenuScene, RunnerScene]
 };
 
-const game = new Phaser.Game(config);
-game.scene.start("MenuScene");
+new Phaser.Game(config);
