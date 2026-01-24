@@ -270,17 +270,8 @@ export default class CatcherScene extends Phaser.Scene {
 
         this.domPointerDown = e => {
             if (this.isGameOver) return;
-
-            // Canvas position in page
-            const rect = canvas.getBoundingClientRect();
-
-            // DOM → canvas coordinates
-            const canvasX = e.clientX - rect.left;
-
-            // Canvas → world coordinates
-            const worldX = canvasX / scale.displayScale.x;
-
-            this.moveDir = worldX < this.plate.x ? -1 : 1;
+            const worldPoint = pointer.positionToCamera(this.cameras.main);
+            this.moveDir = worldPoint.x < this.plate.x ? -1 : 1;
         };
 
         this.domPointerUp = () => {
