@@ -1,5 +1,9 @@
 // RunnerScene.js
-const DEBUG_HITBOXES = false;
+const DEBUG_HITBOXES = true;
+
+const TARGET_WIDTH = 60;
+const TARGET_HEIGHT = 80;
+const CROUCH_FACTOR = 0.55;
 
 const OBSTACLE_TYPES = [
     {
@@ -9,7 +13,7 @@ const OBSTACLE_TYPES = [
         messages: [
             "You slept through the alarm.",
             "Snooze betrayed you.",
-            "Five more minutes was a lie."
+            "\"Five more minutes\" was a lie."
         ]
     },
     {
@@ -28,13 +32,13 @@ const OBSTACLE_TYPES = [
         messages: [
             "Your deadlines caught up.",
             "If only you had more time.",
-            "Time management: not your forte."
+            "Time management is not your forte."
         ]
     },
     {
         emoji: "📉",
         hitbox: { width: 44, height: 44 },
-        yOffset: -36,
+        yOffset: -60,
         requiresDuck: true,
         messages: [
             "You didn’t duck in time.",
@@ -49,12 +53,16 @@ export default class RunnerScene extends Phaser.Scene {
         super("RunnerScene");
     }
 
+    preload() {
+        this.load.image("player", "resources/model.png");
+    }
+
     create() {
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
         /* ──────────────
-            Debug
+           Debug
         ────────────── */
         this.debugGraphics = this.add.graphics();
 
@@ -80,23 +88,39 @@ export default class RunnerScene extends Phaser.Scene {
         this.physics.add.existing(this.ground, true);
 
         /* ──────────────
-           Player
+           Player PHYSICS BODY (authoritative)
         ────────────── */
-        this.player = this.add.rectangle(
-            120,
-            height - this.groundHeight - 30,
-            40,
-            60,
-            0x00ffcc
-        );
+        this.playerBody = this.physics.add
+            .sprite(
+                120,
+                height - this.groundHeight - 30,
+                null
+            )
+            .setOrigin(0.5, 1);
 
-        this.physics.add.existing(this.player);
+        // AFTER size is set
+        this.playerBody.body.setSize(TARGET_WIDTH, TARGET_HEIGHT);
 
-        // Physics body NEVER changes
-        this.player.body.setSize(40, 60);
-        this.player.body.setCollideWorldBounds(true);
+        // 🔑 snap body so its bottom sits on ground
+        this.playerBody.y = height - this.groundHeight - 30;
+        this.playerBody.body.y = this.playerBody.y - TARGET_HEIGHT;
+        this.playerBody.body.updateFromGameObject();
 
-        this.physics.add.collider(this.player, this.ground);
+        this.playerBody.body.setSize(TARGET_WIDTH, TARGET_HEIGHT);
+        this.playerBody.body.setCollideWorldBounds(true);
+        this.playerBody.setVisible(false);
+
+        this.physics.add.collider(this.playerBody, this.ground);
+
+        /* ──────────────
+           Player VISUAL
+        ────────────── */
+        this.player = this.add.image(0, 0, "player")
+            .setOrigin(0.5, 0.7);
+
+        this.player.baseScaleX = TARGET_WIDTH / 1080;
+        this.player.baseScaleY = TARGET_HEIGHT / 1920;
+        this.player.setScale(this.player.baseScaleX, this.player.baseScaleY);
 
         /* ──────────────
            Obstacles
@@ -156,8 +180,8 @@ export default class RunnerScene extends Phaser.Scene {
     jump() {
         if (this.isGameOver) return;
 
-        if (this.player.body.blocked.down) {
-            this.player.body.setVelocityY(-500);
+        if (this.playerBody.body.blocked.down) {
+            this.playerBody.body.setVelocityY(-500);
         }
     }
 
@@ -166,9 +190,16 @@ export default class RunnerScene extends Phaser.Scene {
 
         this.isDucking = true;
 
-        // Visual only — physics body unchanged
-        this.player.setScale(1, 0.55);
-        this.player.y += 13;
+        // Visual only
+        this.player.setScale(
+            this.player.baseScaleX,
+            this.player.baseScaleY * CROUCH_FACTOR
+        );
+        this.player.y -= 1000;
+        this.playerBody.body.setSize(
+            TARGET_WIDTH,
+            TARGET_HEIGHT * CROUCH_FACTOR
+        );
     }
 
     endDuck() {
@@ -176,8 +207,16 @@ export default class RunnerScene extends Phaser.Scene {
 
         this.isDucking = false;
 
-        this.player.setScale(1, 1);
-        this.player.y -= 13;
+        this.player.setScale(
+            this.player.baseScaleX,
+            this.player.baseScaleY
+        );
+        this.playerBody.body.setSize(
+            TARGET_WIDTH,
+            TARGET_HEIGHT
+        );
+        this.player.y -= TARGET_HEIGHT - (TARGET_HEIGHT * CROUCH_FACTOR);
+        this.playerBody.y -= TARGET_HEIGHT - (TARGET_HEIGHT * CROUCH_FACTOR);
     }
 
     /* ──────────────
@@ -192,15 +231,8 @@ export default class RunnerScene extends Phaser.Scene {
 
         const type = Phaser.Utils.Array.GetRandom(OBSTACLE_TYPES);
 
-        // Base Y position
         let y = groundTop;
 
-        // Duck obstacles float higher
-        if (type.requiresDuck) {
-            y -= 60;
-        }
-
-        // Per-obstacle fine tuning
         y += type.yOffset || 0;
 
         const obstacle = this.add.text(
@@ -209,7 +241,7 @@ export default class RunnerScene extends Phaser.Scene {
             type.emoji,
             { fontSize: "48px" }
         )
-            .setOrigin(0.5, type.requiresDuck ? 0 : 1)
+            .setOrigin(0.5, 1)
             .setDepth(10);
 
         obstacle.type = type;
@@ -234,22 +266,25 @@ export default class RunnerScene extends Phaser.Scene {
     update(_, delta) {
         if (this.isGameOver) return;
 
-        // Clear previous debug drawings
+        // Sync visual to physics (feet-locked)
+        this.player.x = this.playerBody.x;
+        this.player.y = this.playerBody.y;
+
         if (DEBUG_HITBOXES) {
             this.debugGraphics.clear();
             this.debugGraphics.lineStyle(1, 0xff0000);
-        }
 
-        const playerBounds = this.player.getBounds();
-
-        // Player hitbox
-        if (DEBUG_HITBOXES) {
-            this.debugGraphics.strokeRectShape(playerBounds);
+            const body = this.playerBody.body;
+            this.debugGraphics.strokeRect(
+                body.x,
+                body.y,
+                body.width,
+                body.height
+            );
         }
 
         this.obstacleTexts.forEach(obstacle => {
             const hb = obstacle.type.hitbox;
-
             const displayBounds = obstacle.getBounds();
 
             const obstacleBounds = new Phaser.Geom.Rectangle(
@@ -259,14 +294,18 @@ export default class RunnerScene extends Phaser.Scene {
                 hb.height
             );
 
-            // Obstacle hitbox
             if (DEBUG_HITBOXES) {
-                this.debugGraphics.strokeRectShape(obstacleBounds);
+                this.debugGraphics.strokeRect(
+                    obstacleBounds.x,
+                    obstacleBounds.y,
+                    obstacleBounds.width,
+                    obstacleBounds.height
+                );
             }
 
             if (
                 Phaser.Geom.Intersects.RectangleToRectangle(
-                    playerBounds,
+                    this.playerBody.body,
                     obstacleBounds
                 )
             ) {
@@ -276,7 +315,6 @@ export default class RunnerScene extends Phaser.Scene {
             }
         });
 
-        // ── Age & speed progression ──
         this.ageTimer += delta;
         if (this.ageTimer > 10000) {
             this.age++;
@@ -289,6 +327,7 @@ export default class RunnerScene extends Phaser.Scene {
     /* ──────────────
        Game Over
     ────────────── */
+
     showGameOverDialog(reason) {
         const cx = this.cameras.main.centerX;
         const cy = this.cameras.main.centerY;
@@ -303,7 +342,7 @@ export default class RunnerScene extends Phaser.Scene {
             wordWrap: { width: 320 }
         }).setOrigin(0.5).setDepth(101);
 
-        const retry = this.add.text(cx, cy + 40, "Press SPACE to retry", {
+        const retry = this.add.text(cx, cy + 40, "Jump to retry", {
             fontSize: "14px",
             color: "#a8a8a8ff"
         }).setOrigin(0.5).setDepth(101);
@@ -320,12 +359,13 @@ export default class RunnerScene extends Phaser.Scene {
     gameOver(reason = "Life happened.") {
         if (this.isGameOver) return;
         this.isGameOver = true;
-        // Stop spawner & tweens immediately
+
         this.spawnTimer.remove(false);
         this.tweens.killAll();
-        // Freeze player
-        this.player.body.setVelocity(0, 0);
-        this.player.body.allowGravity = false;
+
+        this.playerBody.body.setVelocity(0, 0);
+        this.playerBody.body.allowGravity = false;
+
         this.cameras.main.shake(200, 0.01);
         this.showGameOverDialog(reason);
     }
