@@ -17,13 +17,13 @@ export default class MenuScene extends Phaser.Scene {
         const { width, height } = this.scale;
 
         this.add.text(width / 2, 100, "🎂 BIRTHDAY ARCADE 🎂", {
-            fontSize: `${72 / this.getUIScale()}px`,
+            fontSize: `${96 / this.getUIScale()}px`,
             color: "#ffffff"
         }).setOrigin(0.5);
 
-        const startBtn = this.add.text(width / 2, 220,
+        const startBtn = this.add.text(width / 2, 320,
             "▶ Run From Responsibilities",
-            { fontSize: `${48 / this.getUIScale()}px`, color: "#00ffcc" }
+            { fontSize: `${72 / this.getUIScale()}px`, color: "#00ffcc" }
         ).setOrigin(0.5).setInteractive();
 
         startBtn.on("pointerover", () => startBtn.setScale(1.1));
@@ -32,9 +32,9 @@ export default class MenuScene extends Phaser.Scene {
             this.scene.start("RunnerScene");
         });
 
-        this.add.text(width / 2, 300,
-            "🔒 (Coming Soon)\n🔒 (Coming Soon)",
-            { fontSize: `${48 / this.getUIScale()}px`, color: "#777", align: "center" }
+        this.add.text(width / 2, 480,
+            "\n🔒 (Coming Soon)\n\n🔒 (Coming Soon)",
+            { fontSize: `${72 / this.getUIScale()}px`, color: "#777", align: "center" }
         ).setOrigin(0.5);
     }
 }
