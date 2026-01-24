@@ -353,7 +353,7 @@ export default class RunnerScene extends Phaser.Scene {
             color: "#ffffff"
         }).setOrigin(0.5).setDepth(101);
 
-        this.add.text(centerX, centerY + 100 * uiScale, "Jump key to retry", {
+        this.add.text(centerX, centerY + 100 * uiScale, "Tap or jump to retry", {
             fontSize: `${36 / uiScale}px`,
             color: "#aaaaaa"
         }).setOrigin(0.5).setDepth(101);

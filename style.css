@@ -1,13 +1,18 @@
 body {
-  margin: 0;
-  background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-family: sans-serif;
+    margin: 0;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: sans-serif;
 }
 
 canvas {
-  border-radius: 12px;
+    border-radius: 12px;
+    touch-action: none;
+}
+
+html, body {
+    overscroll-behavior: none;
 }
