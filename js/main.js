@@ -24,7 +24,42 @@ const config = {
         }
     },
 
+    // 👇 MenuScene will auto-start
     scene: [MenuScene, RunnerScene]
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+/* ---------------- ROUTER ---------------- */
+
+const ROUTES = {
+    menu: "MenuScene",
+    runner: "RunnerScene"
+};
+
+function getSceneFromHash() {
+    const hash = window.location.hash.replace("#", "");
+    return ROUTES[hash] || "MenuScene";
+}
+
+function switchScene(target) {
+    const active = game.scene.getScenes(true)[0];
+
+    if (active?.scene.key === target) return;
+
+    if (active) {
+        game.scene.stop(active.scene.key);
+    }
+
+    game.scene.start(target);
+}
+
+// After Phaser boots, redirect if needed
+setTimeout(() => {
+    switchScene(getSceneFromHash());
+}, 0);
+
+// Browser navigation support
+window.addEventListener("hashchange", () => {
+    switchScene(getSceneFromHash());
+});

@@ -60,6 +60,10 @@ export default class RunnerScene extends Phaser.Scene {
     }
 
     create() {
+        this.scene.bringToTop();
+        if (window.location.hash !== "#runner") {
+            window.location.hash = "runner";
+        }
         const { width, height } = this.cameras.main;
         this.isMobile =
             this.sys.game.device.input.touch ||
@@ -179,7 +183,6 @@ export default class RunnerScene extends Phaser.Scene {
         // 🌍 GLOBAL INPUT (outside canvas)
         this.domPointerDown = e => {
             if (this.isGameOver) {
-                this.scene.restart();
                 return;
             };
 
@@ -361,20 +364,20 @@ export default class RunnerScene extends Phaser.Scene {
         const { centerX, centerY } = this.cameras.main;
         const uiScale = this.getUIScale();
 
-        this.add.rectangle(centerX, centerY, 360, 180, 0x000000, 0.85)
+        this.add.rectangle(centerX, centerY, 900 * uiScale, 600, 0x000000, 0.85)
             .setDepth(100);
 
-        this.add.text(centerX, centerY - 240 * uiScale, reason, {
-            fontSize: `${40 / uiScale}px`,
+        this.add.text(centerX, centerY - 120 * uiScale, reason, {
+            fontSize: `${56 / uiScale}px`,
             color: "#ffffff",
             align: "center",
-            wordWrap: { width: 720 * uiScale }
+            wordWrap: { width: 800 * uiScale }
         }).setOrigin(0.5).setDepth(101);
 
-        this.add.text(centerX, centerY - 100 * uiScale, `You survived until age ${this.age}.`, {
-            fontSize: `${40 / uiScale}px`,
-            color: "#ffffff"
-        }).setOrigin(0.5).setDepth(101);
+        // this.add.text(centerX, centerY - 60 * uiScale, `You survived until age ${this.age}.`, {
+        //     fontSize: `${40 / uiScale}px`,
+        //     color: "#ffffff"
+        // }).setOrigin(0.5).setDepth(101);
 
         if (newHighScore) {
             this.add.text(
@@ -390,14 +393,25 @@ export default class RunnerScene extends Phaser.Scene {
                 .setDepth(101);
         }
 
-        this.add.text(centerX, centerY + 120 * uiScale, "Tap or jump to retry", {
-            fontSize: `${36 / uiScale}px`,
-            color: "#aaaaaa"
-        }).setOrigin(0.5).setDepth(101);
+        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or jump to restart", {
+            fontSize: `${48 / uiScale}px`,
+            color: "#ff7496ff"
+        }).setOrigin(0.5).setDepth(101).setInteractive().on("pointerdown", () => {
+            this.scene.restart();
+        });
+
+        this.add.text(centerX, centerY + 200 * uiScale, "< Back to menu", {
+            fontSize: `${48 / uiScale}px`,
+            color: "#ff7496ff"
+        }).setOrigin(0.5).setDepth(101).setInteractive().on("pointerdown", () => {
+            window.location.hash = "menu";
+        });
 
         const restart = () => this.scene.restart();
-        this.input.once("pointerdown", restart);
+        // this.input.once("pointerdown", restart);
         this.input.keyboard.once("keydown-SPACE", restart);
+        this.input.keyboard.once("keydown-UP", restart);
+        this.input.keyboard.once("keydown-W", restart);
     }
 
     shutdown() {
