@@ -98,6 +98,8 @@ export default class CatcherScene extends Phaser.Scene {
             this.moveDir = 0;
         });
 
+        this.bindGlobalInput();
+
         /* ---------------- BACK TO MENU ---------------- */
 
         this.input.keyboard.on("keydown-ESC", () => {
@@ -128,7 +130,6 @@ export default class CatcherScene extends Phaser.Scene {
     update() {
         if (this.isGameOver) return;
         const speed = 1200;
-
         let dir = 0;
 
         if (
@@ -261,5 +262,37 @@ export default class CatcherScene extends Phaser.Scene {
         } catch {
             // storage might be disabled — fail silently
         }
+    }
+
+    bindGlobalInput() {
+        const canvas = this.game.canvas;
+        const scale = this.scale;
+
+        this.domPointerDown = e => {
+            if (this.isGameOver) return;
+
+            // Canvas position in page
+            const rect = canvas.getBoundingClientRect();
+
+            // DOM → canvas coordinates
+            const canvasX = e.clientX - rect.left;
+
+            // Canvas → world coordinates
+            const worldX = canvasX / scale.displayScale.x;
+
+            this.moveDir = worldX < this.plate.x ? -1 : 1;
+        };
+
+        this.domPointerUp = () => {
+            this.moveDir = 0;
+        };
+
+        document.addEventListener("pointerdown", this.domPointerDown);
+        document.addEventListener("pointerup", this.domPointerUp);
+    }
+
+    shutdown() {
+        document.removeEventListener("pointerdown", this.domPointerDown);
+        document.removeEventListener("pointerup", this.domPointerUp);
     }
 }
