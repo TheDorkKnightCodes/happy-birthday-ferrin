@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v1.1.1"; // ⬅️ bump this on every release
+const CACHE_VERSION = "v1.1.2"; // ⬅️ bump this on every release
 const CACHE_NAME = `runner-cache-${CACHE_VERSION}`;
 
 const ASSETS = [
