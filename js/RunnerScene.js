@@ -119,10 +119,27 @@ export default class RunnerScene extends Phaser.Scene {
         this.setupInput();
 
         /* ───────── UI ───────── */
+        const uiScale = this.getUIScale();
         this.ageText = this.add.text(20, 20, "Age: 18", {
-            fontSize: `${48 / this.getUIScale()}px`,
+            fontSize: `${48 / uiScale}px`,
             color: "#ffffff"
         });
+
+        this.highScore = this.loadHighScore();
+        if (this.highScore > -1) {
+            console.log(`Loaded high score: ${this.highScore}`);
+            this.highScoreText = this.add.text(
+                this.cameras.main.width - 20,
+                20,
+                `Best: ${this.highScore}`,
+                {
+                    fontSize: `${48 / uiScale}px`,
+                    color: "#ffffff"
+                }
+            )
+                .setOrigin(1, 0); // top-right
+        }
+
 
         /* ───────── Spawner ───────── */
         this.spawnTimer = this.time.addEvent({
@@ -157,7 +174,6 @@ export default class RunnerScene extends Phaser.Scene {
         kb.on("keyup-CTRL", this.endDuck, this);
 
         // Phaser canvas input (still works)
-        this.input.on("pointerdown", p => this.handlePointerDown(p));
         this.input.on("pointerup", () => this.endDuck());
 
         // 🌍 GLOBAL INPUT (outside canvas)
@@ -316,6 +332,7 @@ export default class RunnerScene extends Phaser.Scene {
             this.ageTimer = 0;
             this.ageText.setText(`Age: ${this.age}`);
         }
+        if (this.highScoreText) this.highScoreText.x = this.cameras.main.width - 20;
     }
 
     /* ───────── Game Over ───────── */
@@ -331,29 +348,49 @@ export default class RunnerScene extends Phaser.Scene {
         this.playerBody.body.allowGravity = false;
 
         this.cameras.main.shake(200, 0.01);
-        this.showGameOverDialog(reason);
+        var newHighScore = false;
+        if (this.age > this.highScore) {
+            this.highScore = this.age;
+            this.saveHighScore(this.highScore);
+            newHighScore = true;
+        }
+        this.showGameOverDialog(reason, newHighScore);
     }
 
-    showGameOverDialog(reason) {
+    showGameOverDialog(reason, newHighScore) {
         const { centerX, centerY } = this.cameras.main;
         const uiScale = this.getUIScale();
 
         this.add.rectangle(centerX, centerY, 360, 180, 0x000000, 0.85)
             .setDepth(100);
 
-        this.add.text(centerX, centerY - 120 * uiScale, reason, {
+        this.add.text(centerX, centerY - 240 * uiScale, reason, {
             fontSize: `${40 / uiScale}px`,
             color: "#ffffff",
             align: "center",
             wordWrap: { width: 720 * uiScale }
         }).setOrigin(0.5).setDepth(101);
 
-        this.add.text(centerX, centerY, `You survived until age ${this.age}.`, {
+        this.add.text(centerX, centerY - 100 * uiScale, `You survived until age ${this.age}.`, {
             fontSize: `${40 / uiScale}px`,
             color: "#ffffff"
         }).setOrigin(0.5).setDepth(101);
 
-        this.add.text(centerX, centerY + 100 * uiScale, "Tap or jump to retry", {
+        if (newHighScore) {
+            this.add.text(
+                centerX,
+                centerY + 40 * this.getUIScale(),
+                "🎉 New High Score!",
+                {
+                    fontSize: `${40 / this.getUIScale()}px`,
+                    color: "#ffd700"
+                }
+            )
+                .setOrigin(0.5)
+                .setDepth(101);
+        }
+
+        this.add.text(centerX, centerY + 120 * uiScale, "Tap or jump to retry", {
             fontSize: `${36 / uiScale}px`,
             color: "#aaaaaa"
         }).setOrigin(0.5).setDepth(101);
@@ -374,5 +411,22 @@ export default class RunnerScene extends Phaser.Scene {
             cam.width / 1600,
             cam.height / 900
         );
+    }
+
+    loadHighScore() {
+        try {
+            return Number(localStorage.getItem("highScore_runner")) || -1;
+        } catch {
+            return -1;
+        }
+    }
+
+
+    saveHighScore(score) {
+        try {
+            localStorage.setItem("highScore_runner", score);
+        } catch {
+            // storage might be disabled — fail silently
+        }
     }
 }

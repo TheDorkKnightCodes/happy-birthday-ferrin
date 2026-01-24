@@ -16,7 +16,7 @@ export default class MenuScene extends Phaser.Scene {
         console.log(`UIScale: ${this.getUIScale()}`);
         const { width, height } = this.scale;
 
-        this.add.text(width / 2, 100, "🎂 BIRTHDAY ARCADE 🎂", {
+        this.add.text(width / 2, 100, "🎂 FERRIN'S ARCADE 🎂", {
             fontSize: `${96 / this.getUIScale()}px`,
             color: "#ffffff"
         }).setOrigin(0.5);

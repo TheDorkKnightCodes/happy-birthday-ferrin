@@ -1,4 +1,5 @@
-const CACHE_NAME = "runner-pwa-v1";
+const CACHE_VERSION = "v1.1.0"; // ⬅️ bump this on every release
+const CACHE_NAME = `runner-cache-${CACHE_VERSION}`;
 
 const ASSETS = [
   "./",
@@ -10,22 +11,29 @@ const ASSETS = [
   "./resources/model.png"
 ];
 
+// Install: cache new version
 self.addEventListener("install", event => {
+  self.skipWaiting(); // activate immediately
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
+// Activate: clean old caches
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys
+          .filter(key => key.startsWith("runner-cache-") && key !== CACHE_NAME)
+          .map(key => caches.delete(key))
       )
     )
   );
+  self.clients.claim();
 });
 
+// Fetch: cache-first for game assets
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response =>

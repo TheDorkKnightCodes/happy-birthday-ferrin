@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Birthday Arcade</title>
+    <title>Ferrin's Arcade</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
     <link rel="manifest" href="manifest.json">
@@ -22,6 +22,44 @@
         window.addEventListener("load", () => {
             navigator.serviceWorker.register("./service-worker.js");
         });
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+            window.location.reload();
+        });
+    }
+</script>
+<script>
+    let deferredInstallPrompt = null;
+
+    window.addEventListener("beforeinstallprompt", e => {
+        e.preventDefault(); // stop browser auto-prompt
+        deferredInstallPrompt = e;
+
+        // Optional: show your own UI
+        showInstallButton();
+    });
+
+    function showInstallButton() {
+        const btn = document.createElement("button");
+        btn.textContent = "Add Ferrin's Arcade to home screen";
+        btn.style.position = "fixed";
+        btn.style.bottom = "16px";
+        btn.style.right = "16px";
+        btn.style.padding = "10px 14px";
+        btn.style.borderRadius = "8px";
+        btn.style.border = "none";
+        btn.style.background = "#222";
+        btn.style.color = "#fff";
+        btn.style.fontSize = "14px";
+        btn.style.zIndex = "9999";
+
+        btn.onclick = async () => {
+            btn.remove();
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+        };
+
+        document.body.appendChild(btn);
     }
 </script>
 
