@@ -1,5 +1,6 @@
 import MenuScene from "./MenuScene.js";
 import RunnerScene from "./RunnerScene.js";
+import CatcherScene from "./CatcherScene.js";
 
 const BASE_WIDTH = 1600;
 const BASE_HEIGHT = 900;
@@ -25,7 +26,7 @@ const config = {
     },
 
     // 👇 MenuScene will auto-start
-    scene: [MenuScene, RunnerScene]
+    scene: [MenuScene, RunnerScene, CatcherScene]
 };
 
 const game = new Phaser.Game(config);
@@ -34,7 +35,8 @@ const game = new Phaser.Game(config);
 
 const ROUTES = {
     menu: "MenuScene",
-    runner: "RunnerScene"
+    runner: "RunnerScene",
+    catcher: "CatcherScene"
 };
 
 function getSceneFromHash() {

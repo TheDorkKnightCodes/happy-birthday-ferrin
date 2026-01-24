@@ -25,19 +25,28 @@ export default class MenuScene extends Phaser.Scene {
             color: "#ffffff"
         }).setOrigin(0.5);
 
-        const startBtn = this.add.text(width / 2, 320,
-            "▶ Run From Responsibilities",
+        const runnerBtn = this.add.text(width / 2, 320,
+            "▶ Responsibility Runner",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
-
-        startBtn.on("pointerover", () => startBtn.setScale(1.1));
-        startBtn.on("pointerout", () => startBtn.setScale(1));
-        startBtn.on("pointerdown", () => {
+        runnerBtn.on("pointerover", () => runnerBtn.setScale(1.1));
+        runnerBtn.on("pointerout", () => runnerBtn.setScale(1));
+        runnerBtn.on("pointerdown", () => {
             window.location.hash = "runner";
         });
 
-        this.add.text(width / 2, 480,
-            "\n🔒 (Coming Soon)\n\n🔒 (Coming Soon)",
+        const catcherBtn = this.add.text(width / 2, 420,
+            "▶ Cake Catcher",
+            { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
+        ).setOrigin(0.5).setInteractive();
+        catcherBtn.on("pointerover", () => catcherBtn.setScale(1.1));
+        catcherBtn.on("pointerout", () => catcherBtn.setScale(1));
+        catcherBtn.on("pointerdown", () => {
+            window.location.hash = "catcher";
+        });
+
+        this.add.text(width / 2, 520,
+            "\n🔒 (Coming Soon)\n",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#777", align: "center" }
         ).setOrigin(0.5);
     }

@@ -374,11 +374,6 @@ export default class RunnerScene extends Phaser.Scene {
             wordWrap: { width: 800 * uiScale }
         }).setOrigin(0.5).setDepth(101);
 
-        // this.add.text(centerX, centerY - 60 * uiScale, `You survived until age ${this.age}.`, {
-        //     fontSize: `${40 / uiScale}px`,
-        //     color: "#ffffff"
-        // }).setOrigin(0.5).setDepth(101);
-
         if (newHighScore) {
             this.add.text(
                 centerX,

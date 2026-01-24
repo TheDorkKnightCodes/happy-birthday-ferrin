@@ -7,6 +7,8 @@ const ASSETS = [
   "./js/main.js",
   "./js/MenuScene.js",
   "./js/RunnerScene.js",
+  "./js/CatcherScene.js",
+  "./css/styles.css",
   "./manifest.json",
   "./resources/model.png"
 ];
