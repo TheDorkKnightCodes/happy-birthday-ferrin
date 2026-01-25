@@ -13,6 +13,7 @@ export default class MenuScene extends Phaser.Scene {
 
     preload() {
         this.load.audio("wishesaudio", ["./resources/mp3/wishes.mp3"]);
+        this.load.audio("bgm", ["./resources/mp3/Outro.mp3"]);
     }
 
     create() {
@@ -21,14 +22,43 @@ export default class MenuScene extends Phaser.Scene {
             window.location.hash = "menu";
         }
         /* _________ Audio _________ */
-        this.sound.volume = 0.5;
+        this.sound.volume = 0.8;
+        this.sound.pauseOnBlur = true;
         this.sound.add("wishesaudio");
+
+        if (!this.sound.get('bgm')) {
+            this.bgm = this.sound.add('bgm', {
+                loop: true,
+                volume: 0.05
+            });
+            if (!this.bgm.isPlaying) {
+                this.bgm.play();
+            }
+        }
 
         /* ───────── Menu Text ───────── */
         this.messageShown = false;
         console.log("MenuScene loaded");
         console.log(`UIScale: ${this.getUIScale()}`);
         const { width, height } = this.scale;
+
+        // Mute button for all sounds
+        const muteBtn = this.add.text(width - 20, 20, "🔊",
+            { fontSize: `${40 / this.getUIScale()}px`, color: "#ffffff" }
+        ).setOrigin(1, 0).setInteractive().on("pointerdown", () => {
+            if (this.sound.mute) {
+                this.sound.mute = false;
+                muteBtn.setText("🔊");
+            } else {
+                this.sound.mute = true;
+                muteBtn.setText("🔇");
+            }
+        });
+        if (this.sound.mute) {
+            muteBtn.setText("🔇");
+        }
+        muteBtn.on("pointerover", () => muteBtn.setStyle({ color: "#ff7496ff" }));
+        muteBtn.on("pointerout", () => muteBtn.setStyle({ color: "#ffffff" }));
 
         this.add.text(width / 2, 100, "🎂 FERRIN'S ARCADE 🎂", {
             fontSize: `${72 / this.getUIScale()}px`,

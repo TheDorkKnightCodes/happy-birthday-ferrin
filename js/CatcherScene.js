@@ -4,6 +4,7 @@ export default class CatcherScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image("model", "resources/png/model_arms_up.png");
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
         this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
         this.load.audio("partofmyplan", ["resources/ogg/partofmyplan.ogg", "resources/mp3/partofmyplan.mp3"]);
@@ -59,21 +60,46 @@ export default class CatcherScene extends Phaser.Scene {
         }
 
         /* --------------- Audio --------------- */
-        this.sound.volume = 0.5;
+        this.sound.volume = 0.8;
         this.sound.add("watchthisaudio");
         this.sound.add("partofmyplan");
         this.gameoversounds = ["partofmyplan"];
-        this.sound.play("watchthisaudio");
+        if (!this.sound.get("watchthisaudio").isPlaying) {
+            this.sound.play("watchthisaudio");
+        }
 
         /* ---------------- PLAYER ---------------- */
-
-        this.plate = this.add.text(width / 2, height - 100, "🍽️", {
+        // Plate (gameplay body)
+        const plate = this.add.text(0, 0, "🍽️", {
             fontSize: "64px"
         }).setOrigin(0.5);
 
+        // Human model (visual only)
+        const model = this.add.image(0, 0, "model")
+            .setOrigin(0.5, 0).setScale(0.8);
+
+        // Offset model downward so hands touch plate
+        model.y = plate.height / 2 - 20;
+
+        this.player = this.add.container(
+            this.scale.width / 2,
+            this.scale.height - 100,
+            [plate, model]
+        );
+
+        this.plate = plate;
         this.physics.add.existing(this.plate);
         this.plate.body.setImmovable(true);
         this.plate.body.setAllowGravity(false);
+
+        this.tweens.add({
+            targets: model,
+            y: model.y + 8,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
 
         /* ---------------- CAKES ---------------- */
 
@@ -105,23 +131,17 @@ export default class CatcherScene extends Phaser.Scene {
         this.input.on("pointerdown", pointer => {
             if (this.isGameOver) return;
             const worldPoint = pointer.positionToCamera(this.cameras.main);
-            this.moveDir = worldPoint.x < this.plate.x ? -1 : 1;
+            this.moveDir = worldPoint.x < this.player.x ? -1 : 1;
         });
         this.input.on("pointerup", () => {
             this.moveDir = 0;
         });
 
         this.bindGlobalInput();
-
-        /* ---------------- BACK TO MENU ---------------- */
-
-        this.input.keyboard.on("keydown-ESC", () => {
-            window.location.hash = "menu";
-        });
     }
 
     spawnCake() {
-        const x = Phaser.Math.Between(160, this.scale.width - 160);
+        const x = Phaser.Math.Between(200, this.scale.width - 200);
 
         const cake = this.add.text(x, -40, "🍰", {
             fontSize: "48px"
@@ -159,11 +179,11 @@ export default class CatcherScene extends Phaser.Scene {
             dir = this.moveDir;
         }
 
-        this.plate.x += dir * speed * this.game.loop.delta / 1000;
+        this.player.x += dir * speed * this.game.loop.delta / 1000;
 
         // Clamp plate inside screen
-        this.plate.x = Phaser.Math.Clamp(
-            this.plate.x,
+        this.player.x = Phaser.Math.Clamp(
+            this.player.x,
             40,
             this.scale.width - 40
         );
@@ -194,6 +214,7 @@ export default class CatcherScene extends Phaser.Scene {
         });
         if (this.isGameOver) return;
         this.isGameOver = true;
+        this.tweens.killAll();
 
         this.sound.play(Phaser.Utils.Array.GetRandom(this.gameoversounds));
 
@@ -280,13 +301,14 @@ export default class CatcherScene extends Phaser.Scene {
     }
 
     bindGlobalInput() {
-        const canvas = this.game.canvas;
-        const scale = this.scale;
-
         this.domPointerDown = e => {
             if (this.isGameOver) return;
-            const worldPoint = pointer.positionToCamera(this.cameras.main);
-            this.moveDir = worldPoint.x < this.plate.x ? -1 : 1;
+            const pointerX = e.clientX;
+            // Convert to game world coordinates
+            const rect = this.game.canvas.getBoundingClientRect();
+            const scaleX = this.game.config.width / rect.width;
+            const worldX = (pointerX - rect.left) * scaleX;
+            this.moveDir = worldX < this.player.x ? -1 : 1;
         };
 
         this.domPointerUp = () => {

@@ -147,11 +147,13 @@ export default class RunnerScene extends Phaser.Scene {
         }
 
         /* _________ Audio _________ */
-        this.sound.volume = 0.5;
+        this.sound.volume = 0.8;
         this.sound.add("watchthisaudio");
         this.sound.add("ohoknvm");
         this.gameoversounds = ["ohoknvm"];
-        this.sound.play("watchthisaudio");
+        if (!this.sound.get("watchthisaudio").isPlaying) {
+            this.sound.play("watchthisaudio");
+        }
 
         /* ───────── Spawner ───────── */
         this.spawnTimer = this.time.addEvent({
