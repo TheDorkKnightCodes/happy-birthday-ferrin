@@ -10,7 +10,7 @@ const ASSETS = [
   "./js/CatcherScene.js",
   "./css/styles.css",
   "./manifest.json",
-  "./resources/model.png"
+  "./resources/png/model.png"
 ];
 
 // Install: cache new version

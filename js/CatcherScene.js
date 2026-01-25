@@ -3,6 +3,12 @@ export default class CatcherScene extends Phaser.Scene {
         super("CatcherScene");
     }
 
+    preload() {
+        this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
+        this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
+        this.load.audio("partofmyplan", ["resources/ogg/partofmyplan.ogg", "resources/mp3/partofmyplan.mp3"]);
+    }
+
     create() {
         this.scene.bringToTop();
         if (window.location.hash !== "#catcher") {
@@ -51,6 +57,13 @@ export default class CatcherScene extends Phaser.Scene {
             )
                 .setOrigin(1, 0); // top-right
         }
+
+        /* --------------- Audio --------------- */
+        this.sound.volume = 0.5;
+        this.sound.add("watchthisaudio");
+        this.sound.add("partofmyplan");
+        this.gameoversounds = ["partofmyplan"];
+        this.sound.play("watchthisaudio");
 
         /* ---------------- PLAYER ---------------- */
 
@@ -181,6 +194,8 @@ export default class CatcherScene extends Phaser.Scene {
         });
         if (this.isGameOver) return;
         this.isGameOver = true;
+
+        this.sound.play(Phaser.Utils.Array.GetRandom(this.gameoversounds));
 
         this.spawnTimer.remove(false);
         this.cameras.main.shake(200, 0.01);

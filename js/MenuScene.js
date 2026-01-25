@@ -11,11 +11,20 @@ export default class MenuScene extends Phaser.Scene {
         );
     }
 
+    preload() {
+        this.load.audio("wishesaudio", ["./resources/mp3/wishes.mp3"]);
+    }
+
     create() {
         this.scene.bringToTop();
         if (window.location.hash !== "#menu") {
             window.location.hash = "menu";
         }
+        /* _________ Audio _________ */
+        this.sound.volume = 0.5;
+        this.sound.add("wishesaudio");
+
+        /* ───────── Menu Text ───────── */
         this.messageShown = false;
         console.log("MenuScene loaded");
         console.log(`UIScale: ${this.getUIScale()}`);
@@ -61,9 +70,29 @@ export default class MenuScene extends Phaser.Scene {
         const uiScale = this.getUIScale();
 
         // Darken background
-        this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.85)
+        this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.90)
             .setOrigin(0)
             .setDepth(100);
+
+        const audio = new Audio("./resources/mp3/wishes.mp3");
+        const listenBtn = this.add.text(40, 20, "Listen 🔉", {
+            fontSize: `${40 / uiScale}px`,
+            color: "#ffffff",
+            align: "center",
+            padding: { x: 10, y: 10 },
+            backgroundColor: "#444",
+            wordWrap: { width: 1440 * uiScale }
+        }).setOrigin(0, 0).setDepth(101).setInteractive().on("pointerdown", () => {
+            if (audio.paused) {
+                audio.play();
+                listenBtn.setText("Pause ⏸️");
+            } else {
+                audio.pause();
+                listenBtn.setText("Resume ▶️");
+            }
+        });
+        listenBtn.on("pointerover", () => listenBtn.setStyle({ backgroundColor: "#666" }));
+        listenBtn.on("pointerout", () => listenBtn.setStyle({ backgroundColor: "#444" }));
 
         this.add.text(centerX, centerY, `Happy Birthday Ferrin! 🥳
 
@@ -75,11 +104,14 @@ I don't know what else to write, I didn't even know how to wish you, especially 
 With best wishes,
 Sam
 `, {
-            fontSize: `${42 / uiScale}px`,
+            fontSize: `${40 / uiScale}px`,
             color: "#ffffff",
             align: "center",
             wordWrap: { width: 1440 * uiScale }
-        }).setOrigin(0.5).setDepth(101).setInteractive().on("pointerdown", () => {
+        }).setOrigin(0.5, 0.45).setDepth(101).setInteractive().on("pointerdown", () => {
+            if (audio && !audio.paused) {
+                audio.pause();
+            }
             this.scene.restart();
         });
 

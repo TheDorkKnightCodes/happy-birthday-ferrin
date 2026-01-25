@@ -56,7 +56,9 @@ export default class RunnerScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("player", "resources/model.png");
+        this.load.image("player", "resources/png/model.png");
+        this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
+        this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
     }
 
     create() {
@@ -144,6 +146,12 @@ export default class RunnerScene extends Phaser.Scene {
                 .setOrigin(1, 0); // top-right
         }
 
+        /* _________ Audio _________ */
+        this.sound.volume = 0.5;
+        this.sound.add("watchthisaudio");
+        this.sound.add("ohoknvm");
+        this.gameoversounds = ["ohoknvm"];
+        this.sound.play("watchthisaudio");
 
         /* ───────── Spawner ───────── */
         this.spawnTimer = this.time.addEvent({
@@ -343,6 +351,7 @@ export default class RunnerScene extends Phaser.Scene {
     gameOver(reason = "Life happened.") {
         if (this.isGameOver) return;
         this.isGameOver = true;
+        this.sound.play(Phaser.Utils.Array.GetRandom(this.gameoversounds));
 
         this.spawnTimer.remove(false);
         this.tweens.killAll();
