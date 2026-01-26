@@ -2,7 +2,7 @@ import MenuScene from "./MenuScene.js";
 import RunnerScene from "./RunnerScene.js";
 import CatcherScene from "./CatcherScene.js";
 
-const BASE_WIDTH = 1600;
+const BASE_WIDTH = 1200;
 const BASE_HEIGHT = 900;
 
 const config = {

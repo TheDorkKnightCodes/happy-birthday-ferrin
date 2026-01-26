@@ -240,7 +240,7 @@ export default class CatcherScene extends Phaser.Scene {
         const { centerX, centerY } = this.cameras.main;
         const uiScale = this.getUIScale();
 
-        this.add.rectangle(centerX, centerY, 1200 * uiScale, 600, 0x000000, 0.75)
+        this.add.rectangle(centerX, centerY, 1000 * uiScale, 600, 0x000000, 0.75)
             .setDepth(100);
 
         this.add.text(centerX, centerY - 120 * uiScale, "You dropped too much cake, better get cleaning!", {
@@ -264,7 +264,7 @@ export default class CatcherScene extends Phaser.Scene {
                 .setDepth(101);
         }
 
-        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or press SPACE to retry", {
+        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or SPACE to retry", {
             fontSize: `${48 / uiScale}px`,
             color: "#ff7496ff"
         }).setOrigin(0.5).setDepth(101).setInteractive().on("pointerdown", () => {
@@ -286,7 +286,7 @@ export default class CatcherScene extends Phaser.Scene {
     getUIScale() {
         const cam = this.cameras.main;
         return Math.min(
-            cam.width / 1600,
+            cam.width / 1200,
             cam.height / 900
         );
     }

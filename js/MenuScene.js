@@ -6,7 +6,7 @@ export default class MenuScene extends Phaser.Scene {
     getUIScale() {
         const cam = this.cameras.main;
         return Math.min(
-            cam.width / 1600,
+            cam.width / 1200,
             cam.height / 900
         );
     }
@@ -30,6 +30,7 @@ export default class MenuScene extends Phaser.Scene {
                 loop: true,
                 volume: 0.05
             });
+            this.bgm.pauseOnBlur = true;
             if (!this.bgm.isPlaying) {
                 this.bgm.play();
             }
