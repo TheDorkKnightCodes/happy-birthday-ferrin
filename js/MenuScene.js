@@ -23,7 +23,6 @@ export default class MenuScene extends Phaser.Scene {
         }
         /* _________ Audio _________ */
         this.sound.volume = 0.8;
-        this.sound.pauseOnBlur = true;
         this.sound.add("wishesaudio");
 
         if (!this.sound.get('bgm')) {

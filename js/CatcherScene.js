@@ -5,6 +5,7 @@ export default class CatcherScene extends Phaser.Scene {
 
     preload() {
         this.load.image("model", "resources/png/model_arms_up.png");
+        this.load.image("background", "resources/png/ocean_and_islands_night.png");
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
         this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
         this.load.audio("partofmyplan", ["resources/ogg/partofmyplan.ogg", "resources/mp3/partofmyplan.mp3"]);
@@ -59,6 +60,12 @@ export default class CatcherScene extends Phaser.Scene {
                 .setOrigin(1, 0); // top-right
         }
 
+
+        this.add.image(0, 0, "background")
+            .setOrigin(0, 0)
+            .setDepth(-1)
+            .setDisplaySize(width, height);
+
         /* --------------- Audio --------------- */
         this.sound.volume = 0.8;
         this.sound.add("watchthisaudio");
@@ -79,7 +86,7 @@ export default class CatcherScene extends Phaser.Scene {
             .setOrigin(0.5, 0).setScale(0.8);
 
         // Offset model downward so hands touch plate
-        model.y = plate.height / 2 - 20;
+        model.y = plate.height / 2 - 24;
 
         this.player = this.add.container(
             this.scale.width / 2,
@@ -94,7 +101,7 @@ export default class CatcherScene extends Phaser.Scene {
 
         this.tweens.add({
             targets: model,
-            y: model.y + 8,
+            y: model.y + 12,
             duration: 600,
             yoyo: true,
             repeat: -1,
@@ -233,7 +240,7 @@ export default class CatcherScene extends Phaser.Scene {
         const { centerX, centerY } = this.cameras.main;
         const uiScale = this.getUIScale();
 
-        this.add.rectangle(centerX, centerY, 900 * uiScale, 600, 0x000000, 0.85)
+        this.add.rectangle(centerX, centerY, 1200 * uiScale, 600, 0x000000, 0.75)
             .setDepth(100);
 
         this.add.text(centerX, centerY - 120 * uiScale, "You dropped too much cake, better get cleaning!", {
@@ -257,7 +264,7 @@ export default class CatcherScene extends Phaser.Scene {
                 .setDepth(101);
         }
 
-        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or press SPACE to restart", {
+        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or press SPACE to retry", {
             fontSize: `${48 / uiScale}px`,
             color: "#ff7496ff"
         }).setOrigin(0.5).setDepth(101).setInteractive().on("pointerdown", () => {
@@ -301,6 +308,8 @@ export default class CatcherScene extends Phaser.Scene {
     }
 
     bindGlobalInput() {
+        // Disable browser context menu everywhere
+        document.addEventListener("contextmenu", e => e.preventDefault());
         this.domPointerDown = e => {
             if (this.isGameOver) return;
             const pointerX = e.clientX;

@@ -57,6 +57,7 @@ export default class RunnerScene extends Phaser.Scene {
 
     preload() {
         this.load.image("player", "resources/png/model.png");
+        this.load.image("background", "resources/png/ocean_and_islands_night.png");
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
         this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
     }
@@ -83,14 +84,17 @@ export default class RunnerScene extends Phaser.Scene {
         this.isGameOver = false;
         this.isDucking = false;
 
-        /* ───────── Ground ───────── */
+        /* ───────── Environment ───────── */
         this.groundHeight = 40;
 
         this.ground = this.add
-            .rectangle(0, height - this.groundHeight, width * 2, this.groundHeight, 0x444444)
+            .rectangle(0, height - this.groundHeight, width * 2, this.groundHeight, 0x336633)
             .setOrigin(0, 0);
 
         this.physics.add.existing(this.ground, true);
+        this.add.image(0, 0, "background")
+            .setOrigin(0, 0)
+            .setDisplaySize(width, height - this.groundHeight);
 
         /* ───────── Player Physics ───────── */
         this.playerBody = this.physics.add
@@ -375,7 +379,7 @@ export default class RunnerScene extends Phaser.Scene {
         const { centerX, centerY } = this.cameras.main;
         const uiScale = this.getUIScale();
 
-        this.add.rectangle(centerX, centerY, 900 * uiScale, 600, 0x000000, 0.85)
+        this.add.rectangle(centerX, centerY, 1200 * uiScale, 600, 0x000000, 0.75)
             .setDepth(100);
 
         this.add.text(centerX, centerY - 120 * uiScale, reason, {
@@ -399,7 +403,7 @@ export default class RunnerScene extends Phaser.Scene {
                 .setDepth(101);
         }
 
-        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or jump to restart", {
+        this.add.text(centerX, centerY + 120 * uiScale, "↻ Tap here or jump to retry", {
             fontSize: `${48 / uiScale}px`,
             color: "#ff7496ff"
         }).setOrigin(0.5).setDepth(101).setInteractive().on("pointerdown", () => {
