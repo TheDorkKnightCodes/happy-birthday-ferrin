@@ -9,6 +9,8 @@ export default class CatcherScene extends Phaser.Scene {
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
         this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
         this.load.audio("partofmyplan", ["resources/ogg/partofmyplan.ogg", "resources/mp3/partofmyplan.mp3"]);
+        this.load.audio("collect", ["resources/wav/collect_2.wav"]);
+        this.load.audio("hit", ["resources/wav/Hit4.wav"]);
     }
 
     create() {
@@ -162,6 +164,7 @@ export default class CatcherScene extends Phaser.Scene {
     }
 
     catchCake(plate, cake) {
+        this.sound.play("collect");
         cake.destroy();
         this.score++;
         this.scoreText.setText(`Score: ${this.score}`);
@@ -198,6 +201,7 @@ export default class CatcherScene extends Phaser.Scene {
         // Cleanup missed cakes
         this.cakes.getChildren().forEach(cake => {
             if (cake.y > this.scale.height + 50) {
+                this.sound.play("hit");
                 cake.destroy();
                 if (this.isGameOver) return;
                 this.lives--;

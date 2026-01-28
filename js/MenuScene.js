@@ -123,6 +123,9 @@ export default class MenuScene extends Phaser.Scene {
         });
         listenBtn.on("pointerover", () => listenBtn.setStyle({ backgroundColor: "#666" }));
         listenBtn.on("pointerout", () => listenBtn.setStyle({ backgroundColor: "#444" }));
+        audio.onended = () => {
+            listenBtn.setText("Listen 🔉");
+        };
 
         this.add.text(centerX, centerY, `Happy Birthday Ferrin! 🥳
 

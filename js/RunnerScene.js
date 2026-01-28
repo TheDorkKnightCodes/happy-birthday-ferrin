@@ -60,6 +60,8 @@ export default class RunnerScene extends Phaser.Scene {
         this.load.image("background", "resources/png/ocean_and_islands_night.png");
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
         this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
+        this.load.audio("shrink", ["resources/wav/jump_1.wav"]);
+        this.load.audio("jump", ["resources/wav/jump_2.wav"]);
     }
 
     create() {
@@ -220,6 +222,7 @@ export default class RunnerScene extends Phaser.Scene {
         if (this.isGameOver) return;
 
         if (this.playerBody.body.blocked.down) {
+            this.sound.play("jump");
             this.playerBody.setVelocityY(-600);
         }
     }
@@ -228,7 +231,7 @@ export default class RunnerScene extends Phaser.Scene {
         if (this.isGameOver || this.isDucking) return;
 
         this.isDucking = true;
-
+        this.sound.play("shrink");
         // Visual only
         this.player.setScale(
             this.player.baseScaleX,
@@ -251,14 +254,14 @@ export default class RunnerScene extends Phaser.Scene {
             this.player.baseScaleY
         );
         this.player.setOrigin(0.5, 0.55);
-        // if player close to ground, snap body up to prevent sinking
-        if (this.playerBody.body.blocked.down || this.playerBody.y + TARGET_HEIGHT / 2 >= this.ground.y) {
-            this.playerBody.y -= TARGET_HEIGHT / 2;
-        }
         this.playerBody.body.setSize(
             TARGET_WIDTH,
             TARGET_HEIGHT
         );
+        // if player close to ground, set y to ground level
+        if (this.playerBody.body.blocked.down || this.playerBody.y + TARGET_HEIGHT / 2 >= this.ground.y) {
+            this.playerBody.y = this.ground.y - TARGET_HEIGHT / 2;
+        }
     }
 
     /* ───────── Obstacles ───────── */
