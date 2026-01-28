@@ -134,10 +134,10 @@ I don't know what else to write, I didn't even know how to wish you, especially 
 With best wishes,
 Sam
 `, {
-            fontSize: `${40 / uiScale}px`,
+            fontSize: `${38 / uiScale}px`,
             color: "#ffffff",
             align: "center",
-            wordWrap: { width: 1440 * uiScale }
+            wordWrap: { width: 1160 * uiScale }
         }).setOrigin(0.5, 0.45).setDepth(101).setInteractive().on("pointerdown", () => {
             if (audio && !audio.paused) {
                 audio.pause();
