@@ -67,7 +67,7 @@ export default class MenuScene extends Phaser.Scene {
             this.showMessageDialog();
         });
 
-        const runnerBtn = this.add.text(width / 2, 360,
+        const runnerBtn = this.add.text(width / 2, 380,
             "▶ Responsibility Runner",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
@@ -80,7 +80,7 @@ export default class MenuScene extends Phaser.Scene {
             window.location.hash = "runner";
         });
 
-        const catcherBtn = this.add.text(width / 2, 460,
+        const catcherBtn = this.add.text(width / 2, 480,
             "▶ Cake Catcher",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
@@ -94,7 +94,7 @@ export default class MenuScene extends Phaser.Scene {
         });
 
         const inboxBtn = this.add.text(
-            width / 2, 560,
+            width / 2, 580,
             "▶ Inbox Invasion",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         )
@@ -111,10 +111,10 @@ export default class MenuScene extends Phaser.Scene {
         });
 
 
-        this.add.text(width / 2, 660,
-            "\n🔒 (Locked)\n",
-            { fontSize: `${64 / this.getUIScale()}px`, color: "#777", align: "center" }
-        ).setOrigin(0.5);
+        // this.add.text(width / 2, 660,
+        //     "\n🔒 (Coming soon..?)\n",
+        //     { fontSize: `${64 / this.getUIScale()}px`, color: "#777", align: "center" }
+        // ).setOrigin(0.5);
     }
 
     showMessageDialog() {

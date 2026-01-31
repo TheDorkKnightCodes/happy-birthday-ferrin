@@ -51,6 +51,11 @@
         btn.style.color = "#fff";
         btn.style.fontSize = "14px";
         btn.style.zIndex = "9999";
+        btn.style.userSelect = "none";
+        btn.style.webkitUserSelect = "none";
+        btn.style.touchAction = "manipulation";
+        btn.style.webkitTouchCallout = "none";
+
 
         btn.onclick = async () => {
             btn.remove();
@@ -61,6 +66,40 @@
 
         document.body.appendChild(btn);
     }
+
+    function isIOS() {
+        return /iphone|ipad|ipod/i.test(navigator.userAgent);
+    }
+
+    function isInStandaloneMode() {
+        return window.navigator.standalone === true;
+    }
+
+    if (isIOS() && !isInStandaloneMode()) {
+        const hint = document.createElement("div");
+        hint.textContent = "To create shortcut, tap Share → Add to Home Screen";
+        hint.style.position = "fixed";
+        hint.style.bottom = "64px";
+        hint.style.left = "50%";
+        hint.style.transform = "translateX(-50%)";
+        hint.style.background = "rgba(0,0,0,0.8)";
+        hint.style.color = "#fff";
+        hint.style.padding = "10px 14px";
+        hint.style.borderRadius = "10px";
+        hint.style.fontSize = "14px";
+        hint.style.zIndex = "9999";
+        hint.style.userSelect = "none";
+        hint.style.webkitUserSelect = "none";
+        hint.style.webkitTouchCallout = "none";
+
+        document.body.appendChild(hint);
+
+        // Remove the hint after 5 seconds
+        setTimeout(() => {
+            hint.remove();
+        }, 5000);
+    }
+
 </script>
 
 </html>

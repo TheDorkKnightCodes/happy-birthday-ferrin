@@ -454,7 +454,7 @@ export default class RunnerScene extends Phaser.Scene {
                 color: "#ffffff",
                 align: "center",
                 lineSpacing: 12,
-                wordWrap: { width: 1200 * uiScale }
+                wordWrap: { width: 1100 * uiScale }
             }
         ).setOrigin(0.5);
 
@@ -463,7 +463,7 @@ export default class RunnerScene extends Phaser.Scene {
             centerY + 200 * uiScale,
             "Tap / Click / Press SPACE to start",
             {
-                fontSize: `${32 / uiScale}px`,
+                fontSize: `${40 / uiScale}px`,
                 color: "#ff7496"
             }
         ).setOrigin(0.5);

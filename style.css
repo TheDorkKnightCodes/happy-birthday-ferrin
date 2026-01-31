@@ -6,6 +6,17 @@ body {
     align-items: center;
     height: 100vh;
     font-family: sans-serif;
+
+    /* 🔑 Disable text selection */
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+
+    /* 🔑 Disable long-press callouts */
+    -webkit-touch-callout: none;
+
+    /* 🔑 Disable gestures like double-tap zoom */
+    touch-action: none;
 }
 
 canvas {

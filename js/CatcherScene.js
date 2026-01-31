@@ -312,11 +312,11 @@ export default class CatcherScene extends Phaser.Scene {
             "🍰 Each miss costs a heart\n" +
             "❤️ Lose 3 hearts and it’s over",
             {
-                fontSize: `${36 / uiScale}px`,
+                fontSize: `${40 / uiScale}px`,
                 color: "#ffffff",
                 align: "center",
                 lineSpacing: 12,
-                wordWrap: { width: 900 * uiScale }
+                wordWrap: { width: 1100 * uiScale }
             }
         ).setOrigin(0.5);
 
@@ -325,7 +325,7 @@ export default class CatcherScene extends Phaser.Scene {
             centerY + 200 * uiScale,
             "Tap / Click / Press SPACE to start",
             {
-                fontSize: `${32 / uiScale}px`,
+                fontSize: `${40 / uiScale}px`,
                 color: "#ff7496"
             }
         ).setOrigin(0.5);

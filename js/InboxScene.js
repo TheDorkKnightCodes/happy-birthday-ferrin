@@ -262,11 +262,11 @@ export default class InboxScene extends Phaser.Scene {
             "⚠️ Priority emails expire faster\n" +
             "❤️ Miss 3 emails and it's over",
             {
-                fontSize: `${36 / uiScale}px`,
+                fontSize: `${42 / uiScale}px`,
                 color: "#ffffff",
                 align: "center",
                 lineSpacing: 12,
-                wordWrap: { width: 900 * uiScale }
+                wordWrap: { width: 1100 * uiScale }
             }
         ).setOrigin(0.5);
 
@@ -275,7 +275,7 @@ export default class InboxScene extends Phaser.Scene {
             centerY + 200 * uiScale,
             "Tap / Click / Press SPACE to start",
             {
-                fontSize: `${32 / uiScale}px`,
+                fontSize: `${40 / uiScale}px`,
                 color: "#ff7496"
             }
         ).setOrigin(0.5);
