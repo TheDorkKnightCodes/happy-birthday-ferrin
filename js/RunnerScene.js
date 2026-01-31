@@ -445,9 +445,9 @@ export default class RunnerScene extends Phaser.Scene {
             centerX,
             centerY - 40 * uiScale,
             "Run from responsibilities as long as you can.\n\n" +
-            "⬆️ Jump over obstacles with SPACE/W/Up/LeftClk\n" +
-            "⬇️ Duck under deadlines with Ctrl/S/Down/RightClk\n" +
-            "📱 Tap left half to duck, right half to jump\n" +
+            "⬆️ Jump over obstacles - SPACE/W/Up/LMB\n" +
+            "⬇️ Duck under crashing markets - Ctrl/S/Down/RMB\n" +
+            "📱 Mobile: tap left/right half of screen\n" +
             "⏳ The game speeds up over time",
             {
                 fontSize: `${36 / uiScale}px`,
