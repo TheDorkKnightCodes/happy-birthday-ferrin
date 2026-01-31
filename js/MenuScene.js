@@ -60,14 +60,16 @@ export default class MenuScene extends Phaser.Scene {
         muteBtn.on("pointerover", () => muteBtn.setStyle({ color: "#ff7496ff" }));
         muteBtn.on("pointerout", () => muteBtn.setStyle({ color: "#ffffff" }));
 
-        this.add.text(width / 2, 160, "🎂 FERRIN'S ARCADE 🎂", {
+        const header = this.add.text(width / 2, 200, "🎂 FERRIN'S ARCADE 🎂", {
             fontSize: `${72 / this.getUIScale()}px`,
             color: "#ffffff"
         }).setOrigin(0.5).setInteractive().on("pointerdown", () => {
             this.showMessageDialog();
         });
+        header.on("pointerover", () => header.setScale(1.1));
+        header.on("pointerout", () => header.setScale(1));
 
-        const runnerBtn = this.add.text(width / 2, 380,
+        const runnerBtn = this.add.text(width / 2, 420,
             "▶ Responsibility Runner",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
@@ -80,7 +82,7 @@ export default class MenuScene extends Phaser.Scene {
             window.location.hash = "runner";
         });
 
-        const catcherBtn = this.add.text(width / 2, 480,
+        const catcherBtn = this.add.text(width / 2, 520,
             "▶ Cake Catcher",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
@@ -94,7 +96,7 @@ export default class MenuScene extends Phaser.Scene {
         });
 
         const inboxBtn = this.add.text(
-            width / 2, 580,
+            width / 2, 620,
             "▶ Inbox Invasion",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         )
