@@ -33,6 +33,10 @@ export default class CatcherScene extends Phaser.Scene {
         this.lives = 3;
         this.gameStarted = false;
         this.isGameOver = false;
+        this.difficulty = 0;
+        this.baseFallSpeed = 220;
+        this.baseSpawnDelay = 900;
+        this.minSpawnDelay = 300;
 
         /* ---------------- UI ---------------- */
         const uiScale = this.getUIScale();
@@ -157,8 +161,13 @@ export default class CatcherScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         this.physics.add.existing(cake);
-        cake.body.setVelocityY(200 + this.score * 5);
         cake.body.setAllowGravity(false);
+
+        const speed =
+            this.baseFallSpeed +
+            this.difficulty * 30;
+
+        cake.body.setVelocityY(speed);
 
         this.cakes.add(cake);
     }
@@ -166,8 +175,11 @@ export default class CatcherScene extends Phaser.Scene {
     catchCake(plate, cake) {
         this.sound.play("collect");
         cake.destroy();
+
         this.score++;
         this.scoreText.setText(`Score: ${this.score}`);
+
+        this.updateDifficulty();
     }
 
     update() {
@@ -286,6 +298,19 @@ export default class CatcherScene extends Phaser.Scene {
         // this.input.once("pointerdown", restart);
         this.input.keyboard.once("keydown-SPACE", restart);
     }
+
+    updateDifficulty() {
+        this.difficulty = Math.floor(this.score / 5);
+
+        // Update spawn timer
+        const newDelay = Math.max(
+            this.minSpawnDelay,
+            this.baseSpawnDelay - this.difficulty * 60
+        );
+
+        this.spawnTimer.delay = newDelay;
+    }
+
 
     showIntroOverlay() {
         const { centerX, centerY, width, height } = this.cameras.main;
