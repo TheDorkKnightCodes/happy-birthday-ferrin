@@ -7,7 +7,6 @@ export default class CatcherScene extends Phaser.Scene {
         this.load.image("model", "resources/png/model_arms_up.png");
         this.load.image("background", "resources/png/ocean_and_islands_night.png");
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
-        this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
         this.load.audio("partofmyplan", ["resources/ogg/partofmyplan.ogg", "resources/mp3/partofmyplan.mp3"]);
         this.load.audio("collect", ["resources/wav/collect_2.wav"]);
         this.load.audio("hit", ["resources/wav/Hit4.wav"]);

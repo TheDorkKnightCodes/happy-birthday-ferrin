@@ -1,5 +1,5 @@
 // RunnerScene.js
-const DEBUG_HITBOXES = true;
+const DEBUG_HITBOXES = false;
 
 const TARGET_WIDTH = 92;
 const TARGET_HEIGHT = 240;

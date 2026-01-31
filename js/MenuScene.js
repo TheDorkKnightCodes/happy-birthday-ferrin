@@ -134,7 +134,7 @@ export default class MenuScene extends Phaser.Scene {
             color: "#ffffff",
             align: "center",
             padding: { x: 10, y: 10 },
-            backgroundColor: "#444",
+            backgroundColor: "#303030ff",
             wordWrap: { width: 1440 * uiScale }
         }).setOrigin(0, 0).setDepth(101).setInteractive().on("pointerdown", () => {
             if (audio.paused) {
@@ -147,8 +147,8 @@ export default class MenuScene extends Phaser.Scene {
                 listenBtn.setText("Resume ▶️");
             }
         });
-        listenBtn.on("pointerover", () => listenBtn.setStyle({ backgroundColor: "#666" }));
-        listenBtn.on("pointerout", () => listenBtn.setStyle({ backgroundColor: "#444" }));
+        listenBtn.on("pointerover", () => listenBtn.setStyle({ backgroundColor: "#424242ff" }));
+        listenBtn.on("pointerout", () => listenBtn.setStyle({ backgroundColor: "#303030ff" }));
         audio.onended = () => {
             listenBtn.setText("Listen 🔉");
             this.bgm.volume = 0.04;

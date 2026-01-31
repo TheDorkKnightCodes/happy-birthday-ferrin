@@ -8,7 +8,7 @@ export default class InboxScene extends Phaser.Scene {
     preload() {
         this.load.image("background", "resources/png/ocean_and_islands_night.png");
         this.load.audio("watchthisaudio", ["resources/ogg/watchthis.ogg", "resources/mp3/watchthis.mp3"]);
-        this.load.audio("ohoknvm", ["resources/ogg/ohoknvm.ogg", "resources/mp3/ohoknvm.mp3"]);
+        this.load.audio("partofmyplan", ["resources/ogg/partofmyplan.ogg", "resources/mp3/partofmyplan.mp3"]);
         this.load.audio("collect", ["resources/wav/collect_2.wav"]);
         this.load.audio("hit", ["resources/wav/Hit4.wav"]);
     }
@@ -29,6 +29,13 @@ export default class InboxScene extends Phaser.Scene {
         this.score = 0;
         this.misses = 0;
         this.maxMisses = 3;
+        this.spawnDelay = 1000;         // base
+        this.minSpawnDelay = 300;       // hard cap
+        this.spawnAcceleration = 20;    // ms reduction per level
+        this.difficultyLevel = 0;
+        this.multiSpawnChance = 0.1;    // 15% chance to spawn extra
+        this.maxMultiSpawn = 3;         // max extra spawns
+
 
         /* ---------- Background ---------- */
         this.add.image(0, 0, "background")
@@ -39,7 +46,7 @@ export default class InboxScene extends Phaser.Scene {
         /* ---------- Audio ---------- */
         this.sound.volume = 0.8;
         this.sound.add("watchthisaudio");
-        this.sound.add("ohoknvm");
+        this.sound.add("partofmyplan");
         this.sound.add("collect");
         this.sound.add("hit");
 
@@ -89,15 +96,14 @@ export default class InboxScene extends Phaser.Scene {
             }
         ];
 
-
-        this.spawnDelay = 1200;
-
         this.spawnTimer = this.time.addEvent({
             delay: this.spawnDelay,
             loop: true,
-            callback: this.spawnEmail,
-            callbackScope: this
+            callback: () => {
+                this.spawnEmailWave();
+            }
         });
+
 
         /* ---------- Global Input ---------- */
         this.bindGlobalInput();
@@ -142,8 +148,16 @@ export default class InboxScene extends Phaser.Scene {
             .setInteractive({ useHandCursor: true });
 
         email.spawnTime = this.time.now;
+        const difficultyFactor = Math.min(0.6, this.score * 0.02);
+
         const baseLife = type.priority ? 1400 : 2600;
-        email.lifespan = Phaser.Math.Between(baseLife, baseLife + 800);
+        const adjustedLife = baseLife * (1 - difficultyFactor);
+
+        email.lifespan = Phaser.Math.Between(
+            adjustedLife,
+            adjustedLife + 600
+        );
+
 
         email.on("pointerdown", () => {
             if (this.isGameOver) return;
@@ -176,6 +190,21 @@ export default class InboxScene extends Phaser.Scene {
         this.emails.push(email);
     }
 
+    spawnEmailWave() {
+        if (!this.gameStarted || this.isGameOver) return;
+
+        // Always spawn at least one
+        this.spawnEmail();
+
+        // Chance to spawn extra emails
+        if (Math.random() < this.multiSpawnChance) {
+            const extra = Phaser.Math.Between(1, this.maxMultiSpawn - 1);
+            for (let i = 0; i < extra; i++) {
+                // slight stagger so they don't overlap perfectly
+                this.time.delayedCall(i * 80, () => this.spawnEmail());
+            }
+        }
+    }
 
     update(time) {
         if (!this.gameStarted || this.isGameOver) return;
@@ -209,6 +238,29 @@ export default class InboxScene extends Phaser.Scene {
         if (this.highScoreText) {
             this.highScoreText.x = this.cameras.main.width - 20;
         }
+
+        // Difficulty scaling based on score
+        const targetLevel = Math.floor(this.score / 6);
+
+        if (targetLevel > this.difficultyLevel) {
+            this.difficultyLevel = targetLevel;
+
+            this.spawnDelay = Math.max(
+                this.minSpawnDelay,
+                this.spawnDelay - this.spawnAcceleration
+            );
+
+            // Make multi-spawns more likely (cap it)
+            this.multiSpawnChance = Math.min(0.45, this.multiSpawnChance + 0.03);
+
+            // Apply new delay
+            this.spawnTimer.reset({
+                delay: this.spawnDelay,
+                loop: true,
+                callback: () => this.spawnEmailWave()
+            });
+        }
+
     }
 
     gameOver() {
@@ -226,7 +278,7 @@ export default class InboxScene extends Phaser.Scene {
         this.emails.forEach(e => e.destroy());
         this.emails = [];
 
-        this.sound.play("ohoknvm");
+        this.sound.play("partofmyplan");
         this.cameras.main.shake(200, 0.01);
 
         let newHighScore = false;
