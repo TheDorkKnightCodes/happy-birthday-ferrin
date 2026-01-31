@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v1.1.2"; // ⬅️ bump this on every release
+const CACHE_VERSION = "v1.2"; // ⬅️ bump this on every release
 const CACHE_NAME = `runner-cache-${CACHE_VERSION}`;
 
 const ASSETS = [
@@ -8,6 +8,22 @@ const ASSETS = [
   "./js/MenuScene.js",
   "./js/RunnerScene.js",
   "./js/CatcherScene.js",
+  "./js/InboxScene.js",
+  "./resources/ogg/ohoknvm.ogg",
+  "./resources/ogg/partofmyplan.ogg",
+  "./resources/ogg/watchthis.ogg",
+  "./resources/mp3/ohoknvm.mp3",
+  "./resources/mp3/partofmyplan.mp3",
+  "./resources/mp3/watchthis.mp3",
+  "./resources/mp3/Outro.mp3",
+  "./resources/mp3/wishes.mp3",
+  "./resources/wav/collect_2.wav",
+  "./resources/wav/Hit4.wav",
+  "./resources/wav/jump_1.wav",
+  "./resources/wav/jump_2.wav",
+  "./resources/png/model.png",
+  "./resources/png/model_arms_up.png",
+  "./resources/png/ocean_and_islands_night.png",
   "./css/styles.css",
   "./manifest.json",
   "./resources/png/model.png"

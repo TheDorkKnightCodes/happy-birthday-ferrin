@@ -12,8 +12,8 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.audio("wishesaudio", ["./resources/mp3/wishes.mp3"]);
         this.load.audio("bgm", ["./resources/mp3/Outro.mp3"]);
+        this.load.audio("collect", ["./resources/wav/collect_2.wav"]);
     }
 
     create() {
@@ -23,12 +23,12 @@ export default class MenuScene extends Phaser.Scene {
         }
         /* _________ Audio _________ */
         this.sound.volume = 0.8;
-        this.sound.add("wishesaudio");
+        this.sound.add("collect");
 
         if (!this.sound.get('bgm')) {
             this.bgm = this.sound.add('bgm', {
                 loop: true,
-                volume: 0.05
+                volume: 0.04
             });
             this.bgm.pauseOnBlur = true;
             if (!this.bgm.isPlaying) {
@@ -44,7 +44,7 @@ export default class MenuScene extends Phaser.Scene {
 
         // Mute button for all sounds
         const muteBtn = this.add.text(width - 20, 20, "🔊",
-            { fontSize: `${40 / this.getUIScale()}px`, color: "#ffffff" }
+            { fontSize: `${40 / this.getUIScale()}px`, color: "#ffffff", padding: { x: 10, y: 10 } }
         ).setOrigin(1, 0).setInteractive().on("pointerdown", () => {
             if (this.sound.mute) {
                 this.sound.mute = false;
@@ -60,35 +60,59 @@ export default class MenuScene extends Phaser.Scene {
         muteBtn.on("pointerover", () => muteBtn.setStyle({ color: "#ff7496ff" }));
         muteBtn.on("pointerout", () => muteBtn.setStyle({ color: "#ffffff" }));
 
-        this.add.text(width / 2, 100, "🎂 FERRIN'S ARCADE 🎂", {
+        this.add.text(width / 2, 160, "🎂 FERRIN'S ARCADE 🎂", {
             fontSize: `${72 / this.getUIScale()}px`,
             color: "#ffffff"
         }).setOrigin(0.5).setInteractive().on("pointerdown", () => {
             this.showMessageDialog();
         });
 
-        const runnerBtn = this.add.text(width / 2, 320,
+        const runnerBtn = this.add.text(width / 2, 360,
             "▶ Responsibility Runner",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
         runnerBtn.on("pointerover", () => runnerBtn.setScale(1.1));
         runnerBtn.on("pointerout", () => runnerBtn.setScale(1));
         runnerBtn.on("pointerdown", () => {
+            if ((this.sound.get("collect") && !this.sound.get("collect").isPlaying)) {
+                this.sound.play("collect");
+            }
             window.location.hash = "runner";
         });
 
-        const catcherBtn = this.add.text(width / 2, 420,
+        const catcherBtn = this.add.text(width / 2, 460,
             "▶ Cake Catcher",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
         ).setOrigin(0.5).setInteractive();
         catcherBtn.on("pointerover", () => catcherBtn.setScale(1.1));
         catcherBtn.on("pointerout", () => catcherBtn.setScale(1));
         catcherBtn.on("pointerdown", () => {
+            if ((this.sound.get("collect") && !this.sound.get("collect").isPlaying)) {
+                this.sound.play("collect");
+            }
             window.location.hash = "catcher";
         });
 
-        this.add.text(width / 2, 520,
-            "\n🔒 (Coming Soon)\n",
+        const inboxBtn = this.add.text(
+            width / 2, 560,
+            "▶ Inbox Invasion",
+            { fontSize: `${64 / this.getUIScale()}px`, color: "#ff7496ff" }
+        )
+            .setOrigin(0.5)
+            .setInteractive();
+
+        inboxBtn.on("pointerover", () => inboxBtn.setScale(1.1));
+        inboxBtn.on("pointerout", () => inboxBtn.setScale(1));
+        inboxBtn.on("pointerdown", () => {
+            if ((this.sound.get("collect") && !this.sound.get("collect").isPlaying)) {
+                this.sound.play("collect");
+            }
+            window.location.hash = "inbox";
+        });
+
+
+        this.add.text(width / 2, 660,
+            "\n🔒 (Locked)\n",
             { fontSize: `${64 / this.getUIScale()}px`, color: "#777", align: "center" }
         ).setOrigin(0.5);
     }
@@ -114,10 +138,12 @@ export default class MenuScene extends Phaser.Scene {
             wordWrap: { width: 1440 * uiScale }
         }).setOrigin(0, 0).setDepth(101).setInteractive().on("pointerdown", () => {
             if (audio.paused) {
+                this.bgm.volume = 0.01;
                 audio.play();
                 listenBtn.setText("Pause ⏸️");
             } else {
                 audio.pause();
+                this.bgm.volume = 0.04;
                 listenBtn.setText("Resume ▶️");
             }
         });
@@ -125,6 +151,7 @@ export default class MenuScene extends Phaser.Scene {
         listenBtn.on("pointerout", () => listenBtn.setStyle({ backgroundColor: "#444" }));
         audio.onended = () => {
             listenBtn.setText("Listen 🔉");
+            this.bgm.volume = 0.04;
         };
 
         this.add.text(centerX, centerY, `Happy Birthday Ferrin! 🥳

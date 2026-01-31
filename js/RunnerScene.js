@@ -1,5 +1,5 @@
 // RunnerScene.js
-const DEBUG_HITBOXES = false;
+const DEBUG_HITBOXES = true;
 
 const TARGET_WIDTH = 92;
 const TARGET_HEIGHT = 240;
@@ -83,6 +83,7 @@ export default class RunnerScene extends Phaser.Scene {
         this.speed = this.baseSpeed;
         this.age = 18;
         this.ageTimer = 0;
+        this.gameStarted = false;
         this.isGameOver = false;
         this.isDucking = false;
 
@@ -109,15 +110,14 @@ export default class RunnerScene extends Phaser.Scene {
         // AFTER size is set
         this.playerBody.body.setSize(TARGET_WIDTH, TARGET_HEIGHT);
 
-        // 🔑 snap body so its bottom sits on ground
-        this.playerBody.y = height - this.groundHeight - TARGET_HEIGHT / 2;
+        this.playerBody.y = this.ground.y - TARGET_HEIGHT / 2;
         this.playerBody.body.y = this.playerBody.y - TARGET_HEIGHT;
         this.playerBody.body.updateFromGameObject();
 
         this.physics.add.collider(this.playerBody, this.ground);
 
         /* ───────── Player Visual ───────── */
-        this.player = this.add.image(0, 0, "player")
+        this.player = this.add.image(this.playerBody.x, this.playerBody.y, "player")
             .setOrigin(0.5, 0.55);
 
         this.player.baseScaleX = TARGET_WIDTH / IMG_WIDTH;
@@ -157,9 +157,6 @@ export default class RunnerScene extends Phaser.Scene {
         this.sound.add("watchthisaudio");
         this.sound.add("ohoknvm");
         this.gameoversounds = ["ohoknvm"];
-        if (!this.sound.get("watchthisaudio").isPlaying) {
-            this.sound.play("watchthisaudio");
-        }
 
         /* ───────── Spawner ───────── */
         this.spawnTimer = this.time.addEvent({
@@ -171,6 +168,8 @@ export default class RunnerScene extends Phaser.Scene {
 
         this.events.once("shutdown", this.shutdown, this);
         this.events.once("destroy", this.shutdown, this);
+
+        this.showIntroOverlay();
     }
 
     /* ───────── Input ───────── */
@@ -219,7 +218,7 @@ export default class RunnerScene extends Phaser.Scene {
     /* ───────── Controls ───────── */
 
     jump() {
-        if (this.isGameOver) return;
+        if (!this.gameStarted || this.isGameOver) return;
 
         if (this.playerBody.body.blocked.down) {
             this.sound.play("jump");
@@ -228,7 +227,7 @@ export default class RunnerScene extends Phaser.Scene {
     }
 
     startDuck() {
-        if (this.isGameOver || this.isDucking) return;
+        if (!this.gameStarted || this.isGameOver || this.isDucking) return;
 
         this.isDucking = true;
         this.sound.play("shrink");
@@ -267,7 +266,7 @@ export default class RunnerScene extends Phaser.Scene {
     /* ───────── Obstacles ───────── */
 
     spawnObstacle() {
-        if (this.isGameOver) return;
+        if (!this.gameStarted || this.isGameOver) return;
 
         const width = this.cameras.main.width;
         const y = this.ground.y;
@@ -301,7 +300,7 @@ export default class RunnerScene extends Phaser.Scene {
     /* ───────── Update ───────── */
 
     update(_, delta) {
-        if (this.isGameOver) return;
+        if (!this.gameStarted || this.isGameOver) return;
 
         // Feet-locked sync
         this.player.x = this.playerBody.x;
@@ -426,6 +425,77 @@ export default class RunnerScene extends Phaser.Scene {
         this.input.keyboard.once("keydown-UP", restart);
         this.input.keyboard.once("keydown-W", restart);
     }
+
+    showIntroOverlay() {
+        const { centerX, centerY, width, height } = this.cameras.main;
+        const uiScale = this.getUIScale();
+
+        this.introOverlay = this.add.container(0, 0).setDepth(200);
+
+        const bg = this.add.rectangle(
+            centerX,
+            centerY,
+            width,
+            height,
+            0x000000,
+            0.75
+        );
+
+        const body = this.add.text(
+            centerX,
+            centerY - 40 * uiScale,
+            "Run from responsibilities as long as you can.\n\n" +
+            "⬆️ Jump over obstacles with SPACE/W/Up/LeftClk\n" +
+            "⬇️ Duck under deadlines with Ctrl/S/Down/RightClk\n" +
+            "📱 Tap left half to duck, right half to jump\n" +
+            "⏳ The game speeds up over time",
+            {
+                fontSize: `${36 / uiScale}px`,
+                color: "#ffffff",
+                align: "center",
+                lineSpacing: 12,
+                wordWrap: { width: 1200 * uiScale }
+            }
+        ).setOrigin(0.5);
+
+        const hint = this.add.text(
+            centerX,
+            centerY + 200 * uiScale,
+            "Tap / Click / Press SPACE to start",
+            {
+                fontSize: `${32 / uiScale}px`,
+                color: "#ff7496"
+            }
+        ).setOrigin(0.5);
+
+        this.introOverlay.add([bg, body, hint]);
+
+        this.tweens.add({
+            targets: hint,
+            alpha: { from: 0.5, to: 1 },
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        const startHandler = () => {
+            if (this.gameStarted) return;
+            this.startGame();
+        };
+
+        this.input.once("pointerdown", startHandler);
+        this.input.keyboard.once("keydown-SPACE", startHandler);
+    }
+
+    startGame() {
+        this.gameStarted = true;
+        this.introOverlay?.destroy();
+
+        if (this.sound.get("watchthisaudio") && !this.sound.get("watchthisaudio").isPlaying) {
+            this.sound.play("watchthisaudio");
+        }
+    }
+
 
     shutdown() {
         document.removeEventListener("pointerdown", this.domPointerDown);

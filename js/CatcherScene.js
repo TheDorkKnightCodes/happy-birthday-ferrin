@@ -32,6 +32,7 @@ export default class CatcherScene extends Phaser.Scene {
         this.score = 0;
         this.moveDir = 0; // -1 left, 1 right, 0 idle
         this.lives = 3;
+        this.gameStarted = false;
         this.isGameOver = false;
 
         /* ---------------- UI ---------------- */
@@ -73,9 +74,6 @@ export default class CatcherScene extends Phaser.Scene {
         this.sound.add("watchthisaudio");
         this.sound.add("partofmyplan");
         this.gameoversounds = ["partofmyplan"];
-        if (!this.sound.get("watchthisaudio").isPlaying) {
-            this.sound.play("watchthisaudio");
-        }
 
         /* ---------------- PLAYER ---------------- */
         // Plate (gameplay body)
@@ -147,9 +145,12 @@ export default class CatcherScene extends Phaser.Scene {
         });
 
         this.bindGlobalInput();
+        this.showIntroOverlay();
     }
 
     spawnCake() {
+        if (!this.gameStarted || this.isGameOver) return;
+
         const x = Phaser.Math.Between(200, this.scale.width - 200);
 
         const cake = this.add.text(x, -40, "🍰", {
@@ -171,7 +172,7 @@ export default class CatcherScene extends Phaser.Scene {
     }
 
     update() {
-        if (this.isGameOver) return;
+        if (!this.gameStarted || this.isGameOver) return;
         const speed = 1200;
         let dir = 0;
 
@@ -220,10 +221,10 @@ export default class CatcherScene extends Phaser.Scene {
     /* ───────── Game Over ───────── */
 
     gameOver() {
+        if (this.isGameOver) return;
         this.cakes.getChildren().forEach(cake => {
             cake.destroy();
         });
-        if (this.isGameOver) return;
         this.isGameOver = true;
         this.tweens.killAll();
 
@@ -286,6 +287,77 @@ export default class CatcherScene extends Phaser.Scene {
         // this.input.once("pointerdown", restart);
         this.input.keyboard.once("keydown-SPACE", restart);
     }
+
+    showIntroOverlay() {
+        const { centerX, centerY, width, height } = this.cameras.main;
+        const uiScale = this.getUIScale();
+
+        this.introOverlay = this.add.container(0, 0).setDepth(200);
+
+        const bg = this.add.rectangle(
+            centerX,
+            centerY,
+            width,
+            height,
+            0x000000,
+            0.75
+        );
+
+        const body = this.add.text(
+            centerX,
+            centerY - 40 * uiScale,
+            "Catch the falling cake.\n\n" +
+            "⬅️➡️ Move the plate with arrow keys or A/D\n" +
+            "📱 Tap left/right on mobile\n" +
+            "🍰 Each miss costs a heart\n" +
+            "❤️ Lose 3 hearts and it’s over",
+            {
+                fontSize: `${36 / uiScale}px`,
+                color: "#ffffff",
+                align: "center",
+                lineSpacing: 12,
+                wordWrap: { width: 900 * uiScale }
+            }
+        ).setOrigin(0.5);
+
+        const hint = this.add.text(
+            centerX,
+            centerY + 200 * uiScale,
+            "Tap / Click / Press SPACE to start",
+            {
+                fontSize: `${32 / uiScale}px`,
+                color: "#ff7496"
+            }
+        ).setOrigin(0.5);
+
+        this.introOverlay.add([bg, body, hint]);
+
+        this.tweens.add({
+            targets: hint,
+            alpha: { from: 0.5, to: 1 },
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        const startHandler = () => {
+            if (this.gameStarted) return;
+            this.startGame();
+        };
+
+        this.input.once("pointerdown", startHandler);
+        this.input.keyboard.once("keydown-SPACE", startHandler);
+    }
+
+    startGame() {
+        this.gameStarted = true;
+        this.introOverlay?.destroy();
+
+        if (this.sound.get("watchthisaudio") && !this.sound.get("watchthisaudio").isPlaying) {
+            this.sound.play("watchthisaudio");
+        }
+    }
+
 
     getUIScale() {
         const cam = this.cameras.main;
