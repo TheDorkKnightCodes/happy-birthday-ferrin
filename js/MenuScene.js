@@ -131,6 +131,8 @@ export default class MenuScene extends Phaser.Scene {
             .setDepth(100);
 
         const audio = new Audio("./resources/mp3/wishes.mp3");
+        const birthdaySong = new Audio("./resources/mp3/happybirthday.mp3");
+
         const listenBtn = this.add.text(40, 20, "Listen 🔉", {
             fontSize: `${40 / uiScale}px`,
             color: "#ffffff",
@@ -141,6 +143,10 @@ export default class MenuScene extends Phaser.Scene {
         }).setOrigin(0, 0).setDepth(101).setInteractive().on("pointerdown", () => {
             if (audio.paused) {
                 this.bgm.volume = 0.01;
+                if (birthdaySong && !birthdaySong.paused) {
+                    birthdaySong.pause();
+                    birthdayBtn.setText("Resume Song 🎉");
+                }
                 audio.play();
                 listenBtn.setText("Pause ⏸️");
             } else {
@@ -153,6 +159,35 @@ export default class MenuScene extends Phaser.Scene {
         listenBtn.on("pointerout", () => listenBtn.setStyle({ backgroundColor: "#303030ff" }));
         audio.onended = () => {
             listenBtn.setText("Listen 🔉");
+            this.bgm.volume = 0.04;
+        };
+
+        const birthdayBtn = this.add.text(this.cameras.main.width - 40, 20, "Birthday Song 🎉", {
+            fontSize: `${40 / uiScale}px`,
+            color: "#ffffff",
+            align: "right",
+            padding: { x: 10, y: 10 },
+            backgroundColor: "#303030ff",
+            wordWrap: { width: 1440 * uiScale }
+        }).setOrigin(1, 0).setDepth(101).setInteractive().on("pointerdown", () => {
+            if (birthdaySong.paused) {
+                this.bgm.volume = 0.01;
+                if (audio && !audio.paused) {
+                    audio.pause();
+                    listenBtn.setText("Resume ▶️");
+                }
+                birthdaySong.play();
+                birthdayBtn.setText("Pause Song ⏸️");
+            } else {
+                birthdaySong.pause();
+                this.bgm.volume = 0.04;
+                birthdayBtn.setText("Resume Song 🎉");
+            }
+        });
+        birthdayBtn.on("pointerover", () => birthdayBtn.setStyle({ backgroundColor: "#424242ff" }));
+        birthdayBtn.on("pointerout", () => birthdayBtn.setStyle({ backgroundColor: "#303030ff" }));
+        birthdaySong.onended = () => {
+            birthdayBtn.setText("Birthday Song 🎉");
             this.bgm.volume = 0.04;
         };
 
@@ -170,9 +205,12 @@ Sam
             color: "#ffffff",
             align: "center",
             wordWrap: { width: 1160 * uiScale }
-        }).setOrigin(0.5, 0.45).setDepth(101).setInteractive().on("pointerdown", () => {
+        }).setOrigin(0.5, 0.42).setDepth(101).setInteractive().on("pointerdown", () => {
             if (audio && !audio.paused) {
                 audio.pause();
+            }
+            if (birthdaySong && !birthdaySong.paused) {
+                birthdaySong.pause();
             }
             this.scene.restart();
         });
