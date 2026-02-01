@@ -34,8 +34,8 @@ export default class CatcherScene extends Phaser.Scene {
         this.gameStarted = false;
         this.isGameOver = false;
         this.difficulty = 0;
-        this.baseFallSpeed = 220;
-        this.baseSpawnDelay = 900;
+        this.baseFallSpeed = 200;
+        this.baseSpawnDelay = 1500;
         this.minSpawnDelay = 300;
 
         /* ---------------- UI ---------------- */

@@ -29,12 +29,12 @@ export default class InboxScene extends Phaser.Scene {
         this.score = 0;
         this.misses = 0;
         this.maxMisses = 3;
-        this.spawnDelay = 1000;         // base
+        this.spawnDelay = 1500;         // base
         this.minSpawnDelay = 300;       // hard cap
         this.spawnAcceleration = 20;    // ms reduction per level
         this.difficultyLevel = 0;
         this.multiSpawnChance = 0.1;    // 15% chance to spawn extra
-        this.maxMultiSpawn = 3;         // max extra spawns
+        this.maxMultiSpawn = 2;         // max extra spawns
 
 
         /* ---------- Background ---------- */
@@ -252,6 +252,10 @@ export default class InboxScene extends Phaser.Scene {
 
             // Make multi-spawns more likely (cap it)
             this.multiSpawnChance = Math.min(0.45, this.multiSpawnChance + 0.03);
+
+            if (targetLevel > 5) {
+                this.maxMultiSpawn = 3;
+            }
 
             // Apply new delay
             this.spawnTimer.reset({

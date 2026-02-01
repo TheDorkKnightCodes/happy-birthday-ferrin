@@ -79,7 +79,7 @@ export default class RunnerScene extends Phaser.Scene {
         this.debugGraphics = this.add.graphics();
 
         /* ───────── Game State ───────── */
-        this.baseSpeed = 1000;
+        this.baseSpeed = 600;
         this.speed = this.baseSpeed;
         this.age = 18;
         this.ageTimer = 0;
