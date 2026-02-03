@@ -1,9 +1,10 @@
-const CACHE_VERSION = "v1.2.1"; // ⬅️ bump this on every release
+const CACHE_VERSION = "v1.2.2"; // ⬅️ bump this on every release
 const CACHE_NAME = `runner-cache-${CACHE_VERSION}`;
 
 const ASSETS = [
   "./",
   "./index.html",
+  "./favicon.ico",
   "./js/main.js",
   "./js/MenuScene.js",
   "./js/RunnerScene.js",
@@ -24,7 +25,7 @@ const ASSETS = [
   "./resources/png/model.png",
   "./resources/png/model_arms_up.png",
   "./resources/png/ocean_and_islands_night.png",
-  "./css/styles.css",
+  "./styles.css",
   "./manifest.json",
   "./resources/png/model.png"
 ];
